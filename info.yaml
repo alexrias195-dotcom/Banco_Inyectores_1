@@ -1,17 +1,17 @@
 # Tiny Tapeout project information
 project:
-  title:        ""      # Project title
-  author:       ""      # Your name
+  title:        "Banco de Inyectores 6 Cilindros"
+  author:       "Oscar Alejandro Arias Hernández"
   discord:      ""      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
-  description:  ""      # One line description of what your project does
+  description:  "Controlador de secuencia de 6 inyectores y relevador de bomba por PWM con display de 7 segmentos"
   language:     "Verilog" # other examples include SystemVerilog, Amaranth, VHDL, etc
-  clock_hz:     0       # Clock frequency in Hz (or 0 if not applicable)
+  clock_hz:     50000000 # Clock frequency in Hz (or 0 if not applicable)
 
   # How many tiles your design occupies? A single tile is about 340x160 uM.
   tiles: "1x1"          # Valid values: 1x1, 1x2, 2x2, 3x2, 4x2, 3x4 or 4x4
 
   # Your top module name must start with "tt_um_". Make it unique by including your github username:
-  top_module:  "tt_um_example"
+  top_module:  "tt_um_banco_inyectores"
 
   # List your project's source files here.
   # Source files must be in ./src and you must list each source file separately, one per line.
@@ -23,7 +23,7 @@ project:
 # This section is for the datasheet/website. Use descriptive names (e.g., RX, TX, MOSI, SCL, SEG_A, etc.).
 pinout:
   # Inputs
-  ui[0]: ""
+  ui[0]: "PWM_IN"
   ui[1]: ""
   ui[2]: ""
   ui[3]: ""
@@ -33,23 +33,23 @@ pinout:
   ui[7]: ""
 
   # Outputs
-  uo[0]: ""
-  uo[1]: ""
-  uo[2]: ""
-  uo[3]: ""
-  uo[4]: ""
-  uo[5]: ""
-  uo[6]: ""
+  uo[0]: "INJ_0"
+  uo[1]: "INJ_1"
+  uo[2]: "INJ_2"
+  uo[3]: "INJ_3"
+  uo[4]: "INJ_4"
+  uo[5]: "INJ_5"
+  uo[6]: "RELAY_BOMBA"
   uo[7]: ""
 
   # Bidirectional pins
-  uio[0]: ""
-  uio[1]: ""
-  uio[2]: ""
-  uio[3]: ""
-  uio[4]: ""
-  uio[5]: ""
-  uio[6]: ""
+  uio[0]: "SEG_0"
+  uio[1]: "SEG_1"
+  uio[2]: "SEG_2"
+  uio[3]: "SEG_3"
+  uio[4]: "SEG_4"
+  uio[5]: "SEG_5"
+  uio[6]: "SEG_6"
   uio[7]: ""
 
 # Do not change!
