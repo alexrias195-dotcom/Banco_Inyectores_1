@@ -8,33 +8,51 @@ from cocotb.triggers import ClockCycles
 
 @cocotb.test()
 async def test_project(dut):
-    dut._log.info("Start")
+    dut._log.info("Start banco de inyectores test")
 
-    # Set the clock period to 10 us (100 KHz)
-    clock = Clock(dut.clk, 10, unit="us")
+    # Reloj de 50 MHz (periodo de 20 ns)
+    clock = Clock(dut.clk, 20, unit="ns")
     cocotb.start_soon(clock.start())
 
-    # Reset
+    # Reset activo en bajo
     dut._log.info("Reset")
     dut.ena.value = 1
     dut.ui_in.value = 0
     dut.uio_in.value = 0
     dut.rst_n.value = 0
     await ClockCycles(dut.clk, 10)
+
+    assert int(dut.uo_out.value) == 0, "uo_out debe ser 0 durante reset"
+
+    # Liberar reset y verificar configuracion de pines bidireccionales
     dut.rst_n.value = 1
+    await ClockCycles(dut.clk, 5)
 
-    dut._log.info("Test project behavior")
+    assert int(dut.uio_oe.value) == 0x7F, (
+        f"uio_oe esperado 0x7F, obtenido {hex(int(dut.uio_oe.value))}"
+    )
 
-    # Set the input values you want to test
-    dut.ui_in.value = 20
-    dut.uio_in.value = 30
+    # Con ui_in[0] = 0, no debe haber activacion de bomba ni inyectores
+    dut.ui_in.value = 0
+    await ClockCycles(dut.clk, 200)
+    assert int(dut.uo_out.value) == 0, "Sin senal PWM, uo_out debe mantenerse en 0"
 
-    # Wait for one clock cycle to see the output values
-    await ClockCycles(dut.clk, 1)
+    # Simular senal PWM activa en ui_in[0] con ciclos alternados
+    dut._log.info("Probando senal PWM en ui_in[0]")
+    for _ in range(100):
+        dut.ui_in.value = 1
+        await ClockCycles(dut.clk, 150)
+        dut.ui_in.value = 0
+        await ClockCycles(dut.clk, 150)
 
-    # The following assersion is just an example of how to check the output values.
-    # Change it to match the actual expected output of your module:
-    assert dut.uo_out.value == 50
+    # Verificar que las salidas no tengan bits indefinidos (X/Z)
+    uo_str = str(dut.uo_out.value)
+    uio_str = str(dut.uio_out.value)
+    assert "x" not in uo_str.lower() and "z" not in uo_str.lower(), (
+        f"uo_out contiene bits X/Z: {uo_str}"
+    )
+    assert "x" not in uio_str.lower() and "z" not in uio_str.lower(), (
+        f"uio_out contiene bits X/Z: {uio_str}"
+    )
 
-    # Keep testing the module by changing the input values, waiting for
-    # one or more clock cycles, and asserting the expected output values.
+    dut._log.info(f"uo_out final: {dut.uo_out.value}, uio_out final: {dut.uio_out.value}")
